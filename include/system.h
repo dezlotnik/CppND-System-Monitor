@@ -20,6 +20,7 @@ class System {
 
   // TODO: Define any necessary private members
  private:
+  void RemoveInactivePids(const std::vector<int> &pids);
   Processor cpu_ = {};
   std::vector<Process> processes_ = {};
 };

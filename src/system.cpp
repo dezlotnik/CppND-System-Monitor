@@ -16,7 +16,10 @@ using std::string;
 using std::vector;
 
 // TODO: Return the system's CPU
-Processor& System::Cpu() { return cpu_; }
+Processor& System::Cpu() {
+    cpu_.Update();
+    return cpu_;
+}
 
 // TODO: Return a container composed of the system's processes
 vector<Process>& System::Processes() { 
@@ -29,8 +32,22 @@ vector<Process>& System::Processes() {
     processes_ = processes;
     std::sort(processes_.begin(),processes_.end());
     std::reverse(processes_.begin(),processes_.end());
+
     return processes_; 
 }
+
+// void System::RemoveInactivePids(const vector<int> &pids) {
+//     vector<Process>::iterator it = processes_.begin();
+//     while (it != processes_.end()) {
+//         Process &p = *it;
+//         if (active_pid_map_[p.Pid()]) {
+//             p.Update();
+//             ++it;
+//         } else {
+//             it = processes_.erase(it);
+//         }
+//     }
+// }
 
 // TODO: Return the system's kernel identifier (string)
 std::string System::Kernel() {
