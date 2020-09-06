@@ -12,7 +12,11 @@ float Processor::Utilization() const {
     float delta_active = active_time_ - prev_active_time_;
     float delta_total = total_time_ - prev_total_time_;
     
-    return delta_active/delta_total;
+    if (delta_total > 0.0) {
+        return delta_active/delta_total;
+    } else {
+        return 0.0;
+    }
 }
 
 void Processor::Update() {

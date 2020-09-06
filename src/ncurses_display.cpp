@@ -80,7 +80,6 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
       mvwprintw(window, row, ram_column, processes[i].Ram().c_str());
       mvwprintw(window, row, time_column,
                 Format::ElapsedTime(processes[i].UpTime()).c_str());
-      //mvwprintw(window, row, command_column, "                                                                            ");
       mvwprintw(window, row, command_column,
                 processes[i].Command().substr(0,46).c_str());
     } else {
@@ -110,6 +109,7 @@ void NCursesDisplay::Display(System& system, int n) {
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     box(system_window, 0, 0);
     box(process_window, 0, 0);
+    system.Update();
     DisplaySystem(system, system_window);
     DisplayProcesses(system.Processes(), process_window, n);
     wrefresh(system_window);

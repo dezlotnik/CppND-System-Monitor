@@ -17,12 +17,17 @@ class System {
   int RunningProcesses();             // TODO: See src/system.cpp
   std::string Kernel();               // TODO: See src/system.cpp
   std::string OperatingSystem();      // TODO: See src/system.cpp
+  void Update();
 
   // TODO: Define any necessary private members
  private:
-  void RemoveInactivePids(const std::vector<int> &pids);
+  void RemoveInactiveProcesses();
+  void AddNewProcesses();
+  bool IsActivePid(int pid) const;
+  bool IsNewPid(int pid) const;
   Processor cpu_ = {};
   std::vector<Process> processes_ = {};
+  std::vector<int> active_pids_ = {};
 };
 
 #endif
