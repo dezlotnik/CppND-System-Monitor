@@ -70,9 +70,9 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
   mvwprintw(window, row, command_column, "COMMAND");
   wattroff(window, COLOR_PAIR(2));
   int n_processes = processes.size();
+  wclrtobot(window);
   for (int i = 0; i < n; ++i) {
     if (i < n_processes) {
-      wclrtoeol(window);
       mvwprintw(window, ++row, pid_column, to_string(processes[i].Pid()).c_str());
       mvwprintw(window, row, user_column, processes[i].User().c_str());
       float cpu = processes[i].CpuUtilization() * 100;
@@ -81,7 +81,7 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
       mvwprintw(window, row, time_column,
                 Format::ElapsedTime(processes[i].UpTime()).c_str());
       mvwprintw(window, row, command_column,
-                processes[i].Command().substr(0,46).c_str());
+                processes[i].Command().substr(0, window->_maxx - 46).c_str());
     } else {
       mvwprintw(window, ++row, pid_column, "");
       mvwprintw(window, row, user_column, "");
@@ -107,11 +107,11 @@ void NCursesDisplay::Display(System& system, int n) {
   while (1) {
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    box(system_window, 0, 0);
-    box(process_window, 0, 0);
     system.Update();
     DisplaySystem(system, system_window);
     DisplayProcesses(system.Processes(), process_window, n);
+    box(system_window, 0, 0);
+    box(process_window, 0, 0);
     wrefresh(system_window);
     wrefresh(process_window);
     refresh();
