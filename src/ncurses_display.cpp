@@ -70,10 +70,14 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
   mvwprintw(window, row, command_column, "COMMAND");
   wattroff(window, COLOR_PAIR(2));
   int n_processes = processes.size();
-  wclrtobot(window);
+  //wclrtobot(window);
   for (int i = 0; i < n; ++i) {
     if (i < n_processes) {
-      mvwprintw(window, ++row, pid_column, to_string(processes[i].Pid()).c_str());
+      // Move cursor to next row and clear the row before printing.
+      wmove(window,++row,0);
+      wclrtoeol(window);
+
+      mvwprintw(window, row, pid_column, to_string(processes[i].Pid()).c_str());
       mvwprintw(window, row, user_column, processes[i].User().c_str());
       float cpu = processes[i].CpuUtilization() * 100;
       mvwprintw(window, row, cpu_column, to_string(cpu).substr(0, 4).c_str());
@@ -81,14 +85,11 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
       mvwprintw(window, row, time_column,
                 Format::ElapsedTime(processes[i].UpTime()).c_str());
       mvwprintw(window, row, command_column,
-                processes[i].Command().substr(0, 46).c_str());
+                processes[i].Command().substr(0, window->_maxx - 46).c_str());
     } else {
-      mvwprintw(window, ++row, pid_column, "");
-      mvwprintw(window, row, user_column, "");
-      mvwprintw(window, row, cpu_column, "");
-      mvwprintw(window, row, ram_column, "");
-      mvwprintw(window, row, time_column, "");
-      mvwprintw(window, row, command_column, "");
+      // Clear empty lines.
+      wmove(window,++row,0);
+      wclrtoeol(window);
     }
   }
 }
