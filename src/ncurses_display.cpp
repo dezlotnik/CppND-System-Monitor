@@ -70,7 +70,6 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
   mvwprintw(window, row, command_column, "COMMAND");
   wattroff(window, COLOR_PAIR(2));
   int n_processes = processes.size();
-  //wclrtobot(window);
   for (int i = 0; i < n; ++i) {
     if (i < n_processes) {
       // Move cursor to next row and clear the row before printing.
