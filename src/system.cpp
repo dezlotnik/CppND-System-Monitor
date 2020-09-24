@@ -30,7 +30,6 @@ void System::Update() {
         p.Update();
     }
     std::sort(processes_.begin(),processes_.end());
-    std::reverse(processes_.begin(),processes_.end());
 }
 
 // TODO: Return a container composed of the system's processes

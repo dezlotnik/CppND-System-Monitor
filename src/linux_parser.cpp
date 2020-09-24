@@ -229,8 +229,8 @@ string LinuxParser::Ram(int pid) {
       while (linestream >> key >> value) {
         if (key == "VmSize:") {
           // convert to MB
-          int mem = std::stoi(value);
-          value = std::to_string(mem/1000.0);
+          float mem = std::stof(value)/1000.0f;
+          value = std::to_string(mem);
           return value;
         } 
       }
