@@ -89,13 +89,15 @@ float LinuxParser::MemoryUtilization() {
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() {
   string line, up_time, idle_time;
+  long up_time_long;
   std::ifstream stream(kProcDirectory + kUptimeFilename);
   if (stream.is_open()) {
     std::getline(stream,line);
     std::istringstream linestream(line);
     linestream >> up_time >> idle_time;
+    up_time_long = std::stol(up_time);
   }
-  return std::stol(up_time);
+  return up_time_long;
 }
 
 // TODO: Read and return the number of jiffies for the system
@@ -116,11 +118,11 @@ long LinuxParser::ActiveJiffies(int pid) {
     std::istringstream linestream(line);
     while( (linestream >> utime_str) && ++count < index);
     linestream >> stime_str >> cutime_str >> cstime_str;
+    utime = std::stol(utime_str);
+    stime = std::stol(stime_str);
+    cutime = std::stol(cutime_str);
+    cstime = std::stol(cstime_str);
   }
-  utime = std::stol(utime_str);
-  stime = std::stol(stime_str);
-  cutime = std::stol(cutime_str);
-  cstime = std::stol(cstime_str);
 
   return utime + stime + cutime + cstime;
 }
@@ -228,7 +230,7 @@ string LinuxParser::Ram(int pid) {
         if (key == "VmSize:") {
           // convert to MB
           int mem = std::stoi(value);
-          value = std::to_string(mem/1000);
+          value = std::to_string(mem/1000.0);
           return value;
         } 
       }
