@@ -70,6 +70,7 @@ vector<int> LinuxParser::Pids() {
 float LinuxParser::MemoryUtilization() { 
   string line, key, value;
   float mem_total, mem_free;
+  float memory_utilization = 0.0;
   std::ifstream filestream(kProcDirectory + kMeminfoFilename);
   if (filestream.is_open()) {
     while (std::getline(filestream,line)) {
@@ -82,21 +83,23 @@ float LinuxParser::MemoryUtilization() {
         }
       }
     }
+    memory_utilization = (mem_total - mem_free)/mem_total;
   }
-  return (mem_total - mem_free)/mem_total;
+  return memory_utilization;
 }
 
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() {
   string line, up_time, idle_time;
+  long up = 0;
   std::ifstream stream(kProcDirectory + kUptimeFilename);
   if (stream.is_open()) {
     std::getline(stream,line);
     std::istringstream linestream(line);
     linestream >> up_time >> idle_time;
-    return std::stol(up_time);
+    up = std::stol(up_time);
   }
-  return 0;
+  return up;
 }
 
 // TODO: Read and return the number of jiffies for the system
@@ -111,6 +114,7 @@ long LinuxParser::ActiveJiffies(int pid) {
   int index = 14;
   string line, utime_str, stime_str, cutime_str, cstime_str;
   long utime, stime, cutime, cstime;
+  long active_jiffies = 0;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (filestream.is_open()) {
     std::getline(filestream, line);
@@ -121,8 +125,9 @@ long LinuxParser::ActiveJiffies(int pid) {
     stime = std::stol(stime_str);
     cutime = std::stol(cutime_str);
     cstime = std::stol(cstime_str);
+    active_jiffies = utime + stime + cutime + cstime;
   }
-  return utime + stime + cutime + cstime;
+  return active_jiffies;
 }
 
 // TODO: Read and return the number of active jiffies for the system
@@ -179,11 +184,10 @@ int LinuxParser::TotalProcesses() {
         if (key == "processes") {
           n_processes = std::stoi(value);
         }
-        return n_processes;
       }
     }
   }
-  return 0;
+  return n_rocesses;
 }
 
 // TODO: Read and return the number of running processes
@@ -198,11 +202,10 @@ int LinuxParser::RunningProcesses() {
         if (key == "procs_running") {
           procs_running = std::stoi(value);
         }
-        return procs_running;
       }
     }
   }
-  return 0;
+  return procs_running;
 }
 
 // TODO: Read and return the command associated with a process
@@ -283,12 +286,13 @@ long LinuxParser::UpTime(int pid) {
   int index = 22;
   int count = 0;
   string line, value;
+  long uptime = 0;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (filestream.is_open()) {
     std::getline(filestream, line);
     std::istringstream linestream(line);
     while( (linestream >> value) && ++count < index);
-    return LinuxParser::UpTime() - std::stol(value)/sysconf(_SC_CLK_TCK);
+    uptime = LinuxParser::UpTime() - std::stol(value)/sysconf(_SC_CLK_TCK);
   }
-  return 0;
+  return uptime;
 }
