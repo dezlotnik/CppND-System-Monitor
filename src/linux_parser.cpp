@@ -89,15 +89,14 @@ float LinuxParser::MemoryUtilization() {
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() {
   string line, up_time, idle_time;
-  long up_time_long;
   std::ifstream stream(kProcDirectory + kUptimeFilename);
   if (stream.is_open()) {
     std::getline(stream,line);
     std::istringstream linestream(line);
     linestream >> up_time >> idle_time;
-    up_time_long = std::stol(up_time);
+    return std::stol(up_time);
   }
-  return up_time_long;
+  return 0;
 }
 
 // TODO: Read and return the number of jiffies for the system
@@ -123,7 +122,6 @@ long LinuxParser::ActiveJiffies(int pid) {
     cutime = std::stol(cutime_str);
     cstime = std::stol(cstime_str);
   }
-
   return utime + stime + cutime + cstime;
 }
 
@@ -181,10 +179,11 @@ int LinuxParser::TotalProcesses() {
         if (key == "processes") {
           n_processes = std::stoi(value);
         }
+        return n_processes;
       }
     }
   }
-  return n_processes;
+  return 0;
 }
 
 // TODO: Read and return the number of running processes
@@ -199,10 +198,11 @@ int LinuxParser::RunningProcesses() {
         if (key == "procs_running") {
           procs_running = std::stoi(value);
         }
+        return procs_running;
       }
     }
   }
-  return procs_running;
+  return 0;
 }
 
 // TODO: Read and return the command associated with a process
@@ -288,7 +288,7 @@ long LinuxParser::UpTime(int pid) {
     std::getline(filestream, line);
     std::istringstream linestream(line);
     while( (linestream >> value) && ++count < index);
+    return LinuxParser::UpTime() - std::stol(value)/sysconf(_SC_CLK_TCK);
   }
-  long uptime = LinuxParser::UpTime() - std::stol(value)/sysconf(_SC_CLK_TCK);
-  return uptime; 
+  return 0;
 }
