@@ -41,7 +41,7 @@ void System::RemoveInactiveProcesses() {
     vector<Process>::iterator it = processes_.begin();
     while (it != processes_.end()) {
         Process &p = *it;
-        if (IsActivePid(p.Pid())) {
+        if (active_pids_.find(p.Pid()) != active_pids_.end()) {
             ++it;
         } else {
             it = processes_.erase(it);
@@ -51,28 +51,11 @@ void System::RemoveInactiveProcesses() {
 
 void System::AddNewProcesses() {
     for (int pid : active_pids_) {
-        if (IsNewPid(pid)) {
+        auto it = std::find_if(processes_.begin(),processes_.end(),[&pid](const Process &p) { return p.Pid() == pid; });
+        if (it == processes_.end()) {
             processes_.push_back(Process(pid));
         }
     }
-}
-
-bool System::IsActivePid(int pid) const {
-    for (int p : active_pids_) {
-        if (pid == p) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool System::IsNewPid(int pid) const {
-    for (Process p : processes_) {
-        if (p.Pid() == pid) {
-            return false;
-        }
-    }
-    return true;
 }
 
 // TODO: Return the system's kernel identifier (string)

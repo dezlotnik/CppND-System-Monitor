@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 #include "process.h"
 #include "processor.h"
@@ -23,11 +24,9 @@ class System {
  private:
   void RemoveInactiveProcesses();
   void AddNewProcesses();
-  bool IsActivePid(int pid) const;
-  bool IsNewPid(int pid) const;
   Processor cpu_ = {};
   std::vector<Process> processes_ = {};
-  std::vector<int> active_pids_ = {};
+  std::set<int> active_pids_ = {};
 };
 
 #endif
